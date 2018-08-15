@@ -1,5 +1,9 @@
 package me.echodev.resizer.util;
 
+/**
+ * Created by Łukasz Kiełczykowski on 12/8/2018.
+ */
+
 public class Size {
 
     private int width;
@@ -25,13 +29,6 @@ public class Size {
 
     public float sizeRatio(Size size) {
         return width / (float) size.getWidth();
-    }
-
-    public Size swap() {
-        int tmp = width;
-        width = height;
-        height = tmp;
-        return this;
     }
 
     @Override

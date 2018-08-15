@@ -2,7 +2,9 @@ package me.echodev.resizer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,22 +16,26 @@ import me.echodev.resizer.util.ImageUtils;
 
 /**
  * Created by K.K. Ho on 1/9/2017.
+ * Modified by Łukasz Kiełczykowski on 15/8/2018.
  */
 
 /**
  * An image resizing library for Android, which allows you to scale an image file to a smaller or bigger one while keeping the aspect ratio.
  */
 public class Resizer {
+    private @NonNull Context context;
     private int targetLength, quality;
     private Bitmap.CompressFormat compressFormat;
     private String outputDirPath, outputFilename;
     private File sourceImage;
+    private Uri sourceImageUri;
 
     /**
      * The constructor to initialize Resizer instance.
      * @param context The global application context. You can get it by getApplicationContext().
      */
     public Resizer(Context context) {
+        this.context = context;
         targetLength = 1080;
         quality = 80;
         compressFormat = Bitmap.CompressFormat.JPEG;
@@ -141,13 +147,41 @@ public class Resizer {
     }
 
     /**
+     * Set the source image uri.
+     * @param sourceImageUri The source image uri to be resized.
+     * @return This Resizer instance, for chained settings.
+     */
+    public Resizer setSourceImageUri(Uri sourceImageUri) {
+        this.sourceImageUri = sourceImageUri;
+        return this;
+    }
+
+    /**
      * Get the resized image file.
      * @return The resized image file.
      * @throws IOException
      */
     public File getResizedFile() throws IOException {
-        return ImageUtils.getScaledImage(targetLength, quality, compressFormat, outputDirPath, outputFilename,
-                sourceImage);
+        if (sourceImageUri == null) {
+            return ImageUtils.getScaledImage(
+                    targetLength,
+                    quality,
+                    compressFormat,
+                    outputDirPath,
+                    outputFilename,
+                    sourceImage
+            );
+        } else {
+            return ImageUtils.getScaledImage(
+                    context,
+                    targetLength,
+                    quality,
+                    compressFormat,
+                    outputDirPath,
+                    outputFilename,
+                    sourceImageUri
+            );
+        }
     }
 
     /**
@@ -156,7 +190,11 @@ public class Resizer {
      * @throws IOException
      */
     public Bitmap getResizedBitmap() throws IOException {
-        return ImageUtils.getScaledBitmap(targetLength, sourceImage);
+        if (sourceImageUri == null) {
+            return ImageUtils.getScaledBitmap(targetLength, sourceImage);
+        } else {
+            return ImageUtils.getScaledBitmap(context, targetLength, sourceImageUri);
+        }
     }
 
     /**
